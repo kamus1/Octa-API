@@ -2,4 +2,6 @@ __pycache__/
 venv/
 .env/
 *.pyc
-octaAPI-env/
+
+#virtual environment python
+octaAPI-env/ 
