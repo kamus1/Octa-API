@@ -2,11 +2,19 @@ from fastapi import FastAPI
 import json
 import pandas as pd
 
-#routes
-csv_accelerometer_path = "data\\GY-91.csv"
+#routes windows
+'''csv_accelerometer_path = "data\\GY-91.csv"
 csv_temperatureHumidity_path = "data\\HDC-1080.csv"
 csv_latitudeLongitude_path = "data\\NEO-6M.csv"
 csv_octa_path ="data\\OctaCSV.csv"
+'''
+
+#routes linux
+csv_accelerometer_path = "data/GY-91.csv"
+csv_temperatureHumidity_path = "data/HDC-1080.csv"
+csv_latitudeLongitude_path = "data/NEO-6M.csv"
+csv_octa_path ="data/OctaCSV.csv"
+
 
 
 app = FastAPI()
