@@ -1,0 +1,15 @@
+Requirements
+
+fastapi==0.101.0
+uvicorn==0.23.2
+pandas==2.0.3
+
+
+----------------
+Activar entorno virtual para octaAPI:
+
+En Windows, ejecuta:
+octaAPI-env\Scripts\activate.bat
+
+En Unix o MacOS, ejecuta:
+source octaAPI-env/bin/activate
