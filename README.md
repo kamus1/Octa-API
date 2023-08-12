@@ -4,4 +4,4 @@ Run with
 
 ```
     $ uvicorn main:app
-    ```
+```
