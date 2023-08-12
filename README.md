@@ -3,5 +3,5 @@ Octa-API
 Run with
 
 ```
-$ uvicorn main:app
+uvicorn main:app
 ```
