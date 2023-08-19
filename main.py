@@ -16,6 +16,15 @@ CSV_LATITUDE_LONGITUDE_PATH = os.path.join("data", LATITUDE_LONGITUDE_FILE)
 CSV_OCTA_PATH = os.path.join("data", OCTA_FILE)
 
 
+# Read CSV files and handle FileNotFoundError
+def read_csv_file(csv_path):
+    try:
+        df = pd.read_csv(csv_path)
+        return df
+    except FileNotFoundError:
+        return None
+    
+
 app = FastAPI()
 
 # Main
@@ -26,8 +35,9 @@ def index():
 # GY-91
 @app.get("/accelerometer")
 def accelerometer():
-    # Read the CSV file using pandas
-    df = pd.read_csv(CSV_ACCELEROMETER_PATH)
+    df = read_csv_file(CSV_ACCELEROMETER_PATH)
+    if df is None:
+        return []
     
     # Convert the data into a structured JSON format
     json_data = []
@@ -72,8 +82,9 @@ def accelerometer():
 # HDC-1080
 @app.get("/temperatureHumidity")
 def temperature_humidity():
-    # Read the CSV file using pandas
-    df = pd.read_csv(CSV_TEMPERATURE_HUMIDITY_PATH)
+    df = read_csv_file(CSV_TEMPERATURE_HUMIDITY_PATH)
+    if df is None:
+        return []
     
     # Convert the data into a structured JSON format
     json_data = []
@@ -91,15 +102,19 @@ def temperature_humidity():
 # NEO-6M
 @app.get("/latitudeLongitude")
 def latitude_longitude():
-    df = pd.read_csv(CSV_LATITUDE_LONGITUDE_PATH)
-    json_data = df.to_json(orient="records", date_format="iso", indent=2)
+    df = read_csv_file(CSV_LATITUDE_LONGITUDE_PATH)
+    if df is None:
+        return []
     
+    json_data = df.to_json(orient="records", date_format="iso", indent=2)
     return json.loads(json_data)
 
 # OctaCSV
 @app.get("/octa")
 def octa():
-    df = pd.read_csv(CSV_OCTA_PATH)
-    json_data = df.to_json(orient="records", date_format="iso", indent=2)
+    df = read_csv_file(CSV_OCTA_PATH)
+    if df is None:
+        return []
     
+    json_data = df.to_json(orient="records", date_format="iso", indent=2)
     return json.loads(json_data)
