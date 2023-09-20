@@ -1,0 +1,34 @@
+import numpy as np
+
+def get_orientation(mag_data):
+  """
+  Calcula el ángulo entre el sensor y el campo magnético de la Tierra.
+
+  Args:
+    mag_data: Los datos del magnetómetro.
+
+  Returns:
+    El ángulo entre el sensor y el campo magnético de la Tierra.
+  """
+
+  # Obtener las componentes del campo magnético.
+  x_mag = mag_data[0]
+  y_mag = mag_data[1]
+  z_mag = mag_data[2]
+
+  # Calcular el ángulo entre el sensor y el campo magnético de la Tierra.
+  angle = np.arctan2(y_mag, x_mag)
+
+  return angle
+
+# Obtener los datos del magnetómetro.
+mag_data = [100, 0, 0]
+
+# Calcular el ángulo entre el sensor y el campo magnético de la Tierra.
+angle = get_orientation(mag_data)
+
+# Convertir el ángulo a grados.
+angle_deg = angle * 180 / np.pi
+
+# Mostrar el ángulo en la brújula.
+print(angle_deg)

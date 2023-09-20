@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-import json
 import pandas as pd
 import os
+import numpy as np
 
 # File names
 ACCELEROMETER_FILE = "GY-91.csv"
@@ -36,85 +36,154 @@ def index():
 @app.get("/accelerometer")
 def accelerometer():
     df = read_csv_file(CSV_ACCELEROMETER_PATH)
-    if df is None:
-        return []
+    if df is None or df.empty:
+        return {}
     
-    # Convert the data into a structured JSON format
+    #última fila del DataFrame
+    last_row = df.iloc[-1]
+    
     json_data = []
-    for index, row in df.iterrows():
-        accelerometer_values = row["Acelerometer"].strip("[]").split(", ")
-        gyroscope_values = row["Gyroscope"].strip("[]").split(", ")
-        magnetometer_values = row["Magnetometer"].strip("[]").split(", ")
-        
-        x_accelerometer, y_accelerometer, z_accelerometer = map(float, accelerometer_values)
-        formatted_accelerometer = {
-            "x": x_accelerometer,
-            "y": y_accelerometer,
-            "z": z_accelerometer
-        }
-        
-        x_gyroscope, y_gyroscope, z_gyroscope = map(float, gyroscope_values)
-        formatted_gyroscope = {
-            "x": x_gyroscope,
-            "y": y_gyroscope,
-            "z": z_gyroscope
-        }
-        
-        x_magnetometer, y_magnetometer, z_magnetometer = map(float, magnetometer_values)
-        formatted_magnetometer = {
-            "x": x_magnetometer,
-            "y": y_magnetometer,
-            "z": z_magnetometer
-        }
-        
-        entry = {
-            "Time": row["Time"],
-            "Acelerometer": formatted_accelerometer,
-            "Gyroscope": formatted_gyroscope,
-            "Magnetometer": formatted_magnetometer
-        }
-        
-        json_data.append(entry)
+    #formatear datos de la ultima fila
+    accelerometer_values = last_row["Acelerometer"].strip("[]").split(", ")
+    gyroscope_values = last_row["Gyroscope"].strip("[]").split(", ")
+    magnetometer_values = last_row["Magnetometer"].strip("[]").split(", ")
     
-    # Return the JSON as a response
-    return json_data
+    x_accelerometer, y_accelerometer, z_accelerometer = map(float, accelerometer_values)
+    formatted_accelerometer = {
+        "x": x_accelerometer,
+        "y": y_accelerometer,
+        "z": z_accelerometer
+    }
+    
+    x_gyroscope, y_gyroscope, z_gyroscope = map(float, gyroscope_values)
+    formatted_gyroscope = {
+        "x": x_gyroscope,
+        "y": y_gyroscope,
+        "z": z_gyroscope
+    }
+    
+    x_magnetometer, y_magnetometer, z_magnetometer = map(float, magnetometer_values)
+    formatted_magnetometer = {
+        "x": x_magnetometer,
+        "y": y_magnetometer,
+        "z": z_magnetometer
+    }
+    
+    entry = {
+        "Time": last_row["Time"],
+        "Acelerometer": formatted_accelerometer,
+        "Gyroscope": formatted_gyroscope,
+        "Magnetometer": formatted_magnetometer
+    }
+    
+    json_data.append(entry)
+    
+    return entry
+
 
 # HDC-1080
 @app.get("/temperatureHumidity")
 def temperature_humidity():
     df = read_csv_file(CSV_TEMPERATURE_HUMIDITY_PATH)
-    if df is None:
-        return []
-    
-    # Convert the data into a structured JSON format
-    json_data = []
-    for index, row in df.iterrows():
-        entry = {
-            "Time": row["Time"],
-            "Temperature": row["Temperature(C)"],
-            "Humidity": row["Humidity"]
-        }
-        json_data.append(entry)
-    
-    # Return the JSON as a response
-    return json_data
+    if df is None or df.empty:
+        return {}
+
+    # Get the last row of the DataFrame
+    last_row = df.iloc[-1]
+
+    # Convert the last row into a dictionary
+    last_row_dict = {
+        "Time": last_row["Time"],
+        "Temperature": last_row["Temperature(C)"],
+        "Humidity": last_row["Humidity"]
+    }
+
+    # Return the last row as a JSON response
+    return last_row_dict
 
 # NEO-6M
 @app.get("/latitudeLongitude")
 def latitude_longitude():
     df = read_csv_file(CSV_LATITUDE_LONGITUDE_PATH)
-    if df is None:
-        return []
-    
-    json_data = df.to_json(orient="records", date_format="iso", indent=2)
-    return json.loads(json_data)
+    if df is None or df.empty:
+        return {}
+
+    # Get the last row of the DataFrame
+    last_row = df.iloc[-1]
+
+    # Convert the last row into a dictionary
+    last_row_dict = {
+        "Time": last_row["Time"],
+        "Latitude": last_row["Latitude"],
+        "Longitude": last_row["Longitude"]
+    }
+
+    # Return the last row as a JSON response
+    return last_row_dict
+
 
 # OctaCSV
 @app.get("/octa")
 def octa():
     df = read_csv_file(CSV_OCTA_PATH)
-    if df is None:
-        return []
+    if df is None or df.empty:
+        return {}
+
+    # Get the last row of the DataFrame
+    last_row = df.iloc[-1]
+
+    # Convert the last row into a dictionary
+    last_row_dict = {
+        "hdc_temperature": last_row["hdc_temperature"],
+        "bmp_temperature": last_row["bmp_temperature"],
+        "humidity": last_row["humidity"],
+        "pressure": last_row["pressure"],
+        "altitude": last_row["altitude"],
+        "time": last_row["time"]
+    }
+
+    return last_row_dict
+
+
+#accelerometerTotalSum
+@app.get("/accelerometerTotalSum")
+def accelerometer_total_sum():
+    df = read_csv_file(CSV_ACCELEROMETER_PATH)
+    if df is None or df.empty:
+        return {}
+
+    # Get the last row of the DataFrame
+    last_row = df.iloc[-1]
+    accelerometer_values = last_row["Acelerometer"].strip("[]").split(", ")
+    x_accelerometer, y_accelerometer, z_accelerometer = map(float, accelerometer_values)
+    # Calculate the sum of the x, y, and z components of the accelerometer
+    total_sum = x_accelerometer + y_accelerometer + z_accelerometer
     
-    json_data = df.to_json(orient="records", date_format="iso", indent=2)
-    return json.loads(json_data)
+    response_data = {
+        "TotalSum": total_sum
+    }
+    return response_data
+
+
+#orientation
+@app.get("/orientation")
+def get_orientation_from_csv():
+    df = pd.read_csv(CSV_ACCELEROMETER_PATH)
+    if df.empty:
+        return {}
+
+    last_row = df.iloc[-1]
+    mag_data_str = last_row["Magnetometer"]
+    mag_data = eval(mag_data_str)
+
+    angle = np.arctan2(mag_data[1], mag_data[0])
+
+    # Convert the angle to degrees.
+    angle_deg = (angle * 180) / np.pi
+
+    return {"angle_deg": angle_deg}
+
+
+
+
+
